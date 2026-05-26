@@ -1,0 +1,56 @@
+<Window x:Class="BattleshipWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:BattleshipWpf.ViewModels"
+        Title="Battleship (WPF MVVM)" Height="600" Width="800">
+    <Window.DataContext>
+        <vm:GameViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding StatusMessage}" FontSize="16"
+                   HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+        <!-- Player board (where we click to fire) -->
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding OpponentCells}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="10" Columns="10"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Width="40" Height="40" Margin="2"
+                            Command="{Binding DataContext.AttackCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="LightBlue"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHit}" Value="True">
+                                        <Setter Property="Background" Value="Red"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiss}" Value="True">
+                                        <Setter Property="Background" Value="Gray"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Content>
+                            <TextBlock Text="{Binding DisplaySymbol}" FontWeight="Bold"/>
+                        </Button.Content>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Button Grid.Row="2" Content="Reset Game" Command="{Binding ResetCommand}"
+                HorizontalAlignment="Center" Margin="0,10,0,0" Width="120"/>
+    </Grid>
+</Window>
